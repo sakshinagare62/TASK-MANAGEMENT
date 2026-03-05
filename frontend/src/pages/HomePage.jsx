@@ -21,12 +21,31 @@ const HomePage = () => {
   const fetchTasks = async () => {
     try {
       const res = await api.get("/task");
-      setTasks(Array.isArray(res.data) ? res.data : []);
+
+      const today = new Date();
+
+      const updatedTasks = res.data.map((task) => {
+        const due = new Date(task.dueDate);
+
+        if (task.status !== "completed") {
+          if (due < today) {
+            task.status = "incomplete";
+          } else if (due.toDateString() === today.toDateString()) {
+            task.status = "in-progress";
+          } else {
+            task.status = "pending";
+          }
+        }
+
+        return task;
+      });
+
+      setTasks(updatedTasks);
+
     } catch {
       toast.error("Failed to load tasks");
     }
   };
-
   
   const filteredTasks = tasks
     .filter((task) => {
