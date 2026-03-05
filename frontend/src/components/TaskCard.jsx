@@ -106,11 +106,6 @@ const TaskCard = ({ task, setTasks }) => {
             <CalendarDays className="size-3" />
             {task.dueDate ? formatDate(task.dueDate) : "No Date"}
           </span>
-
-          <span className="text-xs text-gray-400 flex items-center gap-1">
-            <CalendarDays className="size-3" />
-            {task.createdAt ? formatDate(task.createdAt) : "No Date"}
-          </span>
         </div>
       </Link>
 
