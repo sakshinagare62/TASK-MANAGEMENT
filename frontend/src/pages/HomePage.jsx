@@ -18,61 +18,51 @@ const HomePage = () => {
     fetchTasks();
   }, []);
 
-  const fetchTasks = async () => {
-    try {
-      const res = await api.get("/task");
+ const today = new Date().toISOString().split("T")[0];
 
-      const today = new Date();
+const updatedTasks = tasks.map((task) => {
+  if (!task.dueDate) return task;
 
-      const updatedTasks = res.data.map((task) => {
-        const due = new Date(task.dueDate);
+  const due = task.dueDate.split("T")[0];
 
-        if (task.status !== "completed") {
-          if (due < today) {
-            task.status = "incomplete";
-          } else if (due.toDateString() === today.toDateString()) {
-            task.status = "in-progress";
-          } else {
-            task.status = "pending";
-          }
-        }
-
-        return task;
-      });
-
-      setTasks(updatedTasks);
-
-    } catch {
-      toast.error("Failed to load tasks");
-    }
-  };
-  
-  const filteredTasks = tasks
-    .filter((task) => {
-      return (
-        (category === "" || task.category === category) &&
-        (priority === "" || task.priority === priority) &&
-        (status === "" || task.status === status) && 
-        task.title.toLowerCase().includes(search.toLowerCase())
-      );
-    })
-    .sort((a, b) => {
-  if (sort === "priority") {
-    const priorityOrder = {
-      high: 1,
-      medium: 2,
-      low: 3
-    };
-
-    return priorityOrder[a.priority] - priorityOrder[b.priority];
+  if (today < due) {
+    return { ...task, status: "pending" };
+  } 
+  else if (today === due) {
+    return { ...task, status: "in-progress" };
+  } 
+  else {
+    return { ...task, status: "completed" };
   }
+});
 
-      if (sort === "dueDate") {
-        return new Date(a.dueDate) - new Date(b.dueDate);
-      }
-      return 0;
-    });
+const filteredTasks = updatedTasks
+  .filter((task) => {
+    return (
+      (category === "" || task.category === category) &&
+      (priority === "" || task.priority === priority) &&
+      (status === "" || task.status === status) &&
+      task.title.toLowerCase().includes(search.toLowerCase())
+    );
+  })
+  .sort((a, b) => {
+    if (sort === "priority") {
+      const priorityOrder = {
+        high: 1,
+        medium: 2,
+        low: 3
+      };
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    }
 
+    if (sort === "dueDate") {
+      return new Date(a.dueDate) - new Date(b.dueDate);
+    }
+
+    return 0;
+  });
+  
+  
   return (
     <div className="min-h-screen bg-gradient-to-br 
                 from-[#0f172a]  via-[#111827] to-[#1e1b4b] text-white" >
