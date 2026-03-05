@@ -13,7 +13,14 @@ const HomePage = () => {
   const [status, setStatus] = useState("");
   const [sort, setSort] = useState("");
 
-  
+  const fetchTasks = async () => {
+    try {
+      const res = await api.get("/task");
+      setTasks(Array.isArray(res.data) ? res.data : []);
+    } catch {
+      toast.error("Failed to load tasks");
+    }
+  };
   useEffect(() => {
     fetchTasks();
   }, []);
