@@ -62,6 +62,7 @@ const CreatePage = () => {
         </select>
 
         <select
+          value={form.status}
           className="select select-bordered mb-4"
           onChange={(e) => setForm({ ...form, status: e.target.value })}
         >
